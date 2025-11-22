@@ -123,7 +123,19 @@ class FuncionarioForm(forms.ModelForm):
         return cleaned_data
 
 class DependenteElegivelForm(forms.ModelForm):
-    responsavel = forms.CharField(max_length=255, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    responsavel_pelo_dependente=forms.CharField(
+        label='Responsavel pelo dependente',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'readonly':'readonly',
+                'class':'form-control'
+            }
+        )
+    )
+
+
     nome_dependente = forms.CharField(max_length=255, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     idade = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
@@ -131,16 +143,30 @@ class DependenteElegivelForm(forms.ModelForm):
         model = DependenteElegivel
         fields = ['responsavel','nome_dependente', 'idade']
 
-    def __init__(self):
-        super(DependenteElegivelForm, self).__init__()
-        if not self.instance and not self.instance.pk:
-            self.fields['responsavel'].initial = self.instance.responsavel.nome_funcionario
-        if self.instance and self.instance.pk:
-            self.fields['responsavel'].initial=self.instance.responsavel.nome_funcionario
-            self.fields['nome_dependente'].required = False
-            self.fields['idade'].required = False
+    def __init__(self,*args,**kwargs):
 
-    def
+        self.responsavel_instance=kwargs.pop('responsavel_instance',None)
+        super(DependenteElegivelForm, self).__init__(*args,**kwargs)
+        self.fields['responsavel'].required=True
+
+        funcionario_obj=None
+
+        if self.responsavel_instance:
+            funcionario_obj=self.responsavel_instance
+        elif self.instance and self.instance.pk:
+            funcionario_obj=self.instance.responsavel
+
+            self.fields['nome_dependente'].required=False
+            self.fields['idade'].required=False
+
+        if funcionario_obj:
+            self.fields['responsavel_pelo_dependente'].initial=funcionario_obj.nome_funcionario
+            self.fields['responsavel'].initial=funcionario_obj.pk
+
+
+
+
+
 
 
 
