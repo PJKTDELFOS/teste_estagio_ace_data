@@ -87,8 +87,8 @@ class FuncionarioForm(forms.ModelForm):
         model = Funcionario
         fields = ['nome_funcionario', 'salario_hora']
 
-    def __init__(self):
-        super(FuncionarioForm, self).__init__()
+    def __init__(self,*args,**kwargs):
+        super(FuncionarioForm, self).__init__(*args,**kwargs)
         if self.instance and self.instance.pk:
             self.fields['nome_funcionario'].required = False
             self.fields['salario_hora'].required = True
@@ -114,8 +114,7 @@ class FuncionarioForm(forms.ModelForm):
                            'Digite o salario corretamente, valor negativo')
 
 
-        if salario_hora_data is not None and  not isinstance(salario_hora_data,
-                          (int,float,Decimal)):
+        if salario_hora_data is not None and  not isinstance(salario_hora_data,(int,float,Decimal)):
             self.add_error('salario_hora',
                            'Digite um valor correto')
 
@@ -147,6 +146,7 @@ class DependenteElegivelForm(forms.ModelForm):
 
         self.responsavel_instance=kwargs.pop('responsavel_instance',None)
         super(DependenteElegivelForm, self).__init__(*args,**kwargs)
+        self.fields['responsavel'].widget=forms.HiddenInput()
         self.fields['responsavel'].required=True
 
         funcionario_obj=None
@@ -167,6 +167,50 @@ class DependenteElegivelForm(forms.ModelForm):
 
 
 
+class SalarioForm(forms.ModelForm):
 
+    funcionario_nome=forms.CharField(
+        label='Funcionario',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'readonly':'readonly',
+                'class':'form-control'
+            }
+        )
+    )
+
+
+    quantidade_horas_trabalhadas=forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(attrs={'class':'form-control'})
+    )
+
+    class Meta:
+        model = Salario
+        fields = ['funcionario','quantidade_horas_trabalhadas']
+
+    def __init__(self,*args,**kwargs):
+
+        self.funcionario_instance=kwargs.pop('funcionario_instance',None)
+
+
+        super(SalarioForm, self).__init__(*args,**kwargs)
+        self.fields['funcionario'].widget=forms.HiddenInput()
+        self.fields['funcionario'].required=True
+
+        funcionario_obj=None
+
+        if self.funcionario_instance:
+            funcionario_obj=self.funcionario_instance
+        elif self.instance and self.instance.pk:
+            funcionario_obj=self.instance.funcionario
+
+            self.fields['quantidade_horas_trabalhadas'].required=False
+
+
+        if funcionario_obj:
+            self.fields['funcionario'].initial=funcionario_obj.nome_funcionario
+            self.fields['funcionario'].initial=funcionario_obj.pk
 
 
