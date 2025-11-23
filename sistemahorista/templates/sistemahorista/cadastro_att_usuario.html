@@ -1,0 +1,36 @@
+{% extends "global/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="form-container formulario-simples">
+        <form method="post">
+            {% csrf_token %}
+            <h1>
+                {% if modo == 'edição' %}
+                    Edição de Usuario
+                {% elif modo == 'criação' %}
+                    Cadastro de  usuario
+                {% endif %}
+            </h1>
+
+            <h2>Dados do Usuário</h2>
+            {{ form_usuario.non_field_errors }}
+            {{ form_usuario.as_p }}
+
+
+            <div class="botoes-acao-duas-colunas">
+
+                <button  type="submit">
+                    {% if modo == 'edição' %}
+                        Edição de  usuario
+                    {% elif modo == 'criação' %}
+                        Cadastro de  usuario
+                    {% endif %}
+                </button>
+            <!-- incluir um a aqui-->
+            </div>
+
+
+        </form>
+    </div>
+{% endblock %}

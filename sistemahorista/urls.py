@@ -18,15 +18,23 @@ Including another URLconf
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views
+from sistemahorista.views import Login,Logout,paginainicial
+from sistemahorista.sistem_views.user_views import Cadastro_usuario
 
 
 app_name='sistemahorista'
 urlpatterns = [
 #<______________________________Urls de suporte_____________________________________________>#
-    path('', views.Login.as_view(), name='login_sistema'),
-    path('logout/', views.Logout.as_view(), name='logout_sistema'),
-    path('telainicial/', views.paginainicial, name='tela_inicial'),
+    path('', Login.as_view(), name='login_sistema'),
+    path('logout/', Logout.as_view(), name='logout_sistema'),
+    path('telainicial/', paginainicial, name='tela_inicial'),
+
+#<______________________________Urls de usuario_____________________________________________>#
+
+    path('cadastro_usuario/', Cadastro_usuario.as_view(), name='cadastro_usuario'),
+
+
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
