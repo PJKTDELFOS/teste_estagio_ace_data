@@ -142,26 +142,29 @@ class DependenteElegivelForm(forms.ModelForm):
         model = DependenteElegivel
         fields = ['responsavel','nome_dependente', 'idade']
 
-    def __init__(self,*args,**kwargs):
+    def __init__(self, *args, **kwargs):
+        self.responsavel_instance = kwargs.pop('responsavel_instance', None)
+        super(DependenteElegivelForm, self).__init__(*args, **kwargs)
+        self.fields['responsavel'].widget = forms.HiddenInput()
+        self.fields['responsavel'].required = True
 
-        self.responsavel_instance=kwargs.pop('responsavel_instance',None)
-        super(DependenteElegivelForm, self).__init__(*args,**kwargs)
-        self.fields['responsavel'].widget=forms.HiddenInput()
-        self.fields['responsavel'].required=True
-
-        funcionario_obj=None
+        funcionario_obj = None
 
         if self.responsavel_instance:
-            funcionario_obj=self.responsavel_instance
+            # Caso de Criação: Objeto Funcionario é passado via kwargs
+            funcionario_obj = self.responsavel_instance
         elif self.instance and self.instance.pk:
-            funcionario_obj=self.instance.responsavel
+            # ✅ CORREÇÃO: No modo Edição, a FK 'responsavel' já contém o objeto Funcionario
+            funcionario_obj = self.instance.responsavel
 
-            self.fields['nome_dependente'].required=False
-            self.fields['idade'].required=False
+
+            self.fields['nome_dependente'].required = False
+            self.fields['idade'].required = False
 
         if funcionario_obj:
-            self.fields['responsavel_pelo_dependente'].initial=funcionario_obj.nome_funcionario
-            self.fields['responsavel'].initial=funcionario_obj.pk
+            # Isso agora funciona porque funcionario_obj é uma instância de Funcionario
+            self.fields['responsavel_pelo_dependente'].initial = funcionario_obj.nome_funcionario
+            self.fields['responsavel'].initial = funcionario_obj.pk
 
 
 

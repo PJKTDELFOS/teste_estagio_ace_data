@@ -22,8 +22,9 @@ from django.conf.urls.static import static
 from sistemahorista.sistem_views.user_views import Cadastro_usuario,ListarUsuario, AtualizarUsuario, DeletarUsuario
 from sistemahorista.sistem_views.funcionario_views import (
     ListarFuncionarios,CadastrarFuncionario,AtualizarFuncionario,DeletarFuncionario,Funcionario_detalhe)
+from sistemahorista.sistem_views.dependente_views import CadastrarDependente,AtualizarDependente,DeletarDependente
 
-from sistemahorista.views import Login,Logout,paginainicial
+from sistemahorista.views import Login,Logout,paginainicial,Busca
 
 
 
@@ -34,12 +35,15 @@ urlpatterns = [
     path('logout/', Logout.as_view(), name='logout_sistema'),
     path('telainicial/', paginainicial, name='tela_inicial'),
 
+    path('busca', Busca.as_view(), name='busca_dinamica'),
+
 #<______________________________Urls de usuario_____________________________________________>#
 
     path('cadastro_usuario/', Cadastro_usuario.as_view(), name='cadastro_usuario'),
     path('tabela_usuarios',ListarUsuario.as_view(),name='tabela_usuarios'),
     path('tabela_usuarios/<int:pk>/atualizar_usuario/',AtualizarUsuario.as_view(),name='atualizar_usuario'),
     path('tabela_usuarios/<int:pk>/deletar_usuario/',DeletarUsuario.as_view(),name='deletar_usuario'),
+
 
 #<______________________________Urls de Funcionarios_____________________________________________>#
 
@@ -52,7 +56,16 @@ urlpatterns = [
     path('tabela_usuarios/<int:pk>/ficha_funcionario/',
          Funcionario_detalhe.as_view(),name='detalhe_funcionario'),
 
+#<______________________________Urls de Dependente_____________________________________________>#
 
+
+path('tabela_usuarios/<int:pk>/cadastro_dependente/',
+         CadastrarDependente.as_view(),name='cadastrar_dependente'),
+
+path('tabela_usuarios/<int:pk>/atualizar_dependente/',
+        AtualizarDependente.as_view(),name='atualizar_dependente'),
+path('tabela_usuarios/<int:func_pk>/deletar_dependente/<int:pk>',
+        DeletarDependente.as_view(),name='deletar_dependente'),
 
 
 

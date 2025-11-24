@@ -1,0 +1,29 @@
+{% extends 'global/base.html' %}
+
+{% block content %}
+    <div class="list-container">
+        <h2>Resultados para "{{ termo }}"</h2>
+
+        {% if resultados %}
+            {% for modelo, itens in resultados.items %}
+                <details class="form-colapsavel">
+                    <summary>{{ modelo|title }}</summary>
+                    <ul style="list-style: none; padding: 0; margin-top: 1rem;">
+                        {% for item in itens %}
+                            <li style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 1rem;">
+                                {% if modelo == 'funcionario' %}
+                                    <strong>Nome:</strong> <a href="{% url 'sistemahorista:detalhe_funcionario' pk=item.pk %}">{{ item.nome_funcionario }}</a> |
+
+                                {% else %}
+                                    {{ item }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </details>
+            {% endfor %}
+        {% else %}
+            <p>Nenhum resultado encontrado.</p>
+        {% endif %}
+    </div>
+{% endblock %}

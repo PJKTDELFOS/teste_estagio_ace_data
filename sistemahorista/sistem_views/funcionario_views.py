@@ -16,6 +16,8 @@ from sistemahorista.models import *
 from datetime import date,timedelta
 from django.core.paginator import Paginator
 from django.db.models import F, FloatField, ExpressionWrapper,Prefetch,DateField,Func,Case,When,Value,IntegerField
+from django.db.models import Q
+from sistemahorista.services.search_map import mapa_modelos
 
 
 class ListarFuncionarios(LoginRequiredMixin,ListView):
@@ -23,6 +25,16 @@ class ListarFuncionarios(LoginRequiredMixin,ListView):
     template_name = 'sistemahorista/tabela_funcionario.html'
     context_object_name = 'funcionarios'
     paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query= self.request.GET.get('q','')
+        if search_query:
+            queryset = queryset.filter(Q(numero_processo__icontains=search_query))
+        return queryset
+
+
+
 
 
 class CadastrarFuncionario(LoginRequiredMixin,CreateView):
@@ -99,6 +111,7 @@ class Funcionario_detalhe(LoginRequiredMixin,DetailView):
         context = super().get_context_data(**kwargs)
         context['salarios'] = Salario.objects.filter(funcionario=self.object)
         context['dependentes'] = DependenteElegivel.objects.filter(responsavel=self.object)
+
 
         return context
 

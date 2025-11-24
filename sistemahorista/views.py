@@ -14,7 +14,8 @@ from .forms import *
 from datetime import date,timedelta
 from django.core.paginator import Paginator
 from django.db.models import F, FloatField, ExpressionWrapper,Prefetch,DateField,Func,Case,When,Value,IntegerField
-
+from sistemahorista.services.main_services import MainServices
+from sistemahorista.services.search_map import mapa_modelos
 
 # Create your views here.
 
@@ -50,7 +51,25 @@ class Logout(LoginRequiredMixin,View):
         return redirect('sistemahorista:login_sistema')
 
 
+class Busca(LoginRequiredMixin,View):
 
+    def get(self, request):
+        termo=request.GET.get('q','').strip()
+        resultados={}
+        if termo:
+            for modelo_nome,info in mapa_modelos.items():
+                queryset=info['queryset']
+                campos=info['campos']
+                qs_resultados=MainServices.busca_centralizada(queryset,termo,campos)
+
+                if qs_resultados.exists():
+                    resultados[modelo_nome]=qs_resultados
+
+
+        return render(request, f'sistemahorista/busca.html', {
+            'termo': termo,
+            'resultados': resultados,
+        })
 
 
 

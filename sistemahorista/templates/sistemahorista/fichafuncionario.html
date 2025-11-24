@@ -23,7 +23,7 @@
         <div class="botoes-acao-duas-colunas">
             <a class=" btn btn-editar" href="{% url 'sistemahorista:atualizar_funcionario' funcionario.pk %}">Editar</a>
             <a class="btn btn-editar" href="#">Cadastrar Salario</a>
-            <a class="btn btn-editar" href="#">Cadastrar dependente</a>
+            <a  onclick="return abrir_popup_dependente(this.href)" class="btn btn-editar" href="{% url 'sistemahorista:cadastrar_dependente' funcionario.pk %}">Cadastrar dependente</a>
             <form method="post"
                   class="form-excluir"
                   action="{% url 'sistemahorista:deletar_funcionario' funcionario.pk %}"
@@ -145,10 +145,10 @@
 
                         <td data-label="Ações">
                             <div class="action-buttons">
-                                <a href="#" class="edit">Editar</a>
+                                <a onclick="return abrir_popup_dependente(this.href)" href="{% url 'sistemahorista:atualizar_dependente' dependente.pk %}" class="edit">Editar</a>
                                 <form method="post"
                                       class="form-excluir"
-                                      action="#"
+                                      action="{% url 'sistemahorista:deletar_dependente'  funcionario.pk dependente.pk %}"
                                       onsubmit="if(confirm('Deseja realmente excluir este produto?')) { this.querySelector('button').disabled = true; return true; } else { return false; }">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-excluir">Excluir</button>
@@ -206,6 +206,38 @@
             const url = window.location.pathname + '?' + params.toString();
             window.location.href = url;
         });
+
+
+        function abrir_popup_dependente(url){
+            const largura =600;
+            const altura = 400;
+            const esquerda = (screen.width/2)-(largura/2);
+            const topo = (screen.height/2)-(altura/2);
+
+            const popup=window.open(
+                url,
+                'PopUpDependente',
+                `width=${largura},height=${altura},top=${topo},left=${esquerda}`
+            );
+
+            const timer=setInterval(
+                function (){
+                    if(popup.closed){
+                        clearInterval(timer);
+                        window.location.reload();
+                    }
+
+                },500
+            );
+            return false;
+
+            function fecharPopUpdependente(){
+                window.opener.location.reload(true);
+                window.close();
+            }
+
+
+        }
     </script>
 
     </div>

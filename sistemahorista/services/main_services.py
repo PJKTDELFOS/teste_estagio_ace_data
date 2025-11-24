@@ -25,32 +25,17 @@ class MainServices:
     def busca_centralizada(queryset, termo, campos):
         if not termo:
             return queryset.none()
-        termo_limpo_num = ''.join(filter(str.isdigit, termo))
-        hash_num = hashlib.sha256(termo_limpo_num.encode('utf-8')).hexdigest()
-        hash_email = hashlib.sha256(termo.lower().encode('utf-8')).hexdigest()
-        q_hash_match = Q()
-        if 'cpf_hash' in campos:
-            q_hash_match |= Q(cpf_hash__iexact=hash_num)
-        if 'tel_contato_hash' in campos:
-            q_hash_match |= Q(tel_contato_hash__iexact=hash_num)
-        if 'email_hash' in campos:
-            q_hash_match |= Q(email_hash__iexact=hash_email)
-        q_text_match = Q()
-        palavras = termo.split()
+        termo=str(termo).strip().lower()
+        q_match = Q()
+        palavras=termo.split()
+        q_text_match=Q()
         for palavra in palavras:
-            q_or_palavra = Q()
+            q_or_palavra_em_campos=Q()
             for campo in campos:
-                if campo not in ['cpf_hash', 'tel_contato_hash', 'email_hash']:
-                    q_or_palavra |= Q(
-                        **{f'{campo}__icontains': palavra}
-                    )
+                q_or_palavra_em_campos |= Q(**{f'{campo}__icontains': palavra})
+            q_text_match |= q_or_palavra_em_campos
 
-            if q_text_match:
-                q_text_match &= q_or_palavra
-            else:
-                q_text_match = q_or_palavra
-        q_final = q_hash_match | q_text_match
-        return queryset.filter(q_final).distinct()
+        return queryset.filter(q_text_match).distinct()
 
 
 
