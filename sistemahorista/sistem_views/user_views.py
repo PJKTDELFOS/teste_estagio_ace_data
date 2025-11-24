@@ -18,6 +18,19 @@ from datetime import date,timedelta
 from django.core.paginator import Paginator
 from django.db.models import F, FloatField, ExpressionWrapper,Prefetch,DateField,Func,Case,When,Value,IntegerField
 from sistemahorista.services.main_services import MainServices
+from django.contrib.auth import get_user_model
+
+User=get_user_model() #quando one to one field, usar isso para capturar o User
+
+
+
+class ListarUsuario(LoginRequiredMixin,ListView):
+    model = User
+    template_name = 'sistemahorista/tabela_usuario.html'
+    context_object_name = 'usuarios'
+    paginate_by = 10
+
+
 
 class Cadastro_usuario(View):
     template_name='sistemahorista/cadastro_att_usuario.html'
@@ -34,7 +47,7 @@ class Cadastro_usuario(View):
         try:
             MainServices.criar_usuario(form_usuario)
             messages.success(request, 'Usuario cadastrado com sucesso')
-            return redirect(reverse('sistemahorista:tela_inicial'))# fazer a tabela depois
+            return redirect(reverse('sistemahorista:tabela_usuarios'))# fazer a tabela depois
         except ValidationError as e:
             messages.error(request,'erro ao cadastrar usuario')
             # form_usuario.is_valid()

@@ -20,7 +20,7 @@
 
             <div class="botoes-acao-duas-colunas">
 
-                <button  type="submit">
+                <button  type="submit" class="ordenar-btn">
                     {% if modo == 'edição' %}
                         Edição de  usuario
                     {% elif modo == 'criação' %}
@@ -28,9 +28,11 @@
                     {% endif %}
                 </button>
             <!-- incluir um a aqui-->
+
+                <a class="ordenar-btn" href="{% url 'sistemahorista:tabela_usuarios' %}">Voltar</a>
+
             </div>
-
-
         </form>
+
     </div>
 {% endblock %}

@@ -18,6 +18,8 @@ Including another URLconf
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+
+from sistemahorista.sistem_views import ListarUsuario
 from sistemahorista.views import Login,Logout,paginainicial
 from sistemahorista.sistem_views.user_views import Cadastro_usuario
 
@@ -32,6 +34,7 @@ urlpatterns = [
 #<______________________________Urls de usuario_____________________________________________>#
 
     path('cadastro_usuario/', Cadastro_usuario.as_view(), name='cadastro_usuario'),
+    path('tabela_usuarios',ListarUsuario.as_view(),name='tabela_usuarios')
 
 
 
