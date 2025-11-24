@@ -1,10 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "global/base.html" %}
+{% load crispy_forms_tags %}
 
-</body>
-</html>
+{% block content %}
+    <div class="form-container formulario-simples">
+        <form method="post">
+            {% csrf_token %}
+            <h1>
+                {% if modo == 'edição' %}
+                    Edição de Funcionario
+                {% elif modo == 'criação' %}
+                    Cadastro de  Funcionario
+                {% endif %}
+            </h1>
+
+            <h2>Dados do Funcionario</h2>
+            {{ form_funcionario.non_field_errors }}
+            {{ form_funcionario.as_p }}
+
+
+            <div class="botoes-acao-duas-colunas">
+
+                <button  type="submit" class="ordenar-btn">
+                    {% if modo == 'edição' %}
+                        Edição de  funcionario
+                    {% elif modo == 'criação' %}
+                        Cadastro de  funcionario
+                    {% endif %}
+                </button>
+
+                <a class="ordenar-btn" href="{% url 'sistemahorista:tabela_funcionarios' %}">Voltar</a>
+
+            </div>
+        </form>
+
+    </div>
+{% endblock %}

@@ -32,30 +32,73 @@ class ListarUsuario(LoginRequiredMixin,ListView):
 
 
 
-class Cadastro_usuario(View):
-    template_name='sistemahorista/cadastro_att_usuario.html'
+class Cadastro_usuario(CreateView):
+    model = User
+    form_class = UsuarioForm
+    template_name = 'sistemahorista/cadastro_att_usuario.html'
+    success_url = reverse_lazy('sistemahorista:tabela_usuarios')
 
-    def get(self,request,*args,**kwargs):
-        return render(
-            request,self.template_name,
-            {'form_usuario':UsuarioForm(),
-             'modo':'criação'}
-        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_usuario'] = UsuarioForm()
+        context['modo'] = 'criação'
+        return context
 
-    def post(self,request,*args,**kwargs):
-        form_usuario=UsuarioForm(request.POST)
+    def form_valid(self, form):
         try:
-            MainServices.criar_usuario(form_usuario)
-            messages.success(request, 'Usuario cadastrado com sucesso')
-            return redirect(reverse('sistemahorista:tabela_usuarios'))# fazer a tabela depois
+            MainServices.criar_usuario(form)
+            messages.success(self.request, 'Usuario cadastrado com sucesso')
+            return super().form_valid(form)
         except ValidationError as e:
-            messages.error(request,'erro ao cadastrar usuario')
-            # form_usuario.is_valid()
-            return render(
-                request,self.template_name,
-                {'form_usuario':form_usuario,
-                 'modo':'criação'}
-            )
+            messages.error(self.request, 'Erro ao cadastrar usuario')
+            return super().form_invalid(form)
+
+class AtualizarUsuario(LoginRequiredMixin,UpdateView):
+    model = User
+    form_class = UsuarioForm
+    template_name = 'sistemahorista/cadastro_att_usuario.html'
+    success_url = reverse_lazy('sistemahorista:tabela_usuarios')
+    context_object_name = 'usuario'
+    pk_url_kwarg = 'pk'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_usuario'] = UsuarioForm(instance=self.object)
+        context['modo'] = 'edição'
+        return context
+
+    def form_valid(self, form_usuario):
+        messages.success(self.request, 'Usuario atualizado com sucesso')
+        return super().form_valid(form_usuario)
+
+    def form_invalid(self, form_usuario):
+        messages.error(self.request, 'Erro ao atualizar usuario')
+        return super().form_invalid(form_usuario)
+
+class DeletarUsuario(LoginRequiredMixin,View):
+    def post(self,request,*args,**kwargs):
+        usuario=get_object_or_404(User,pk=kwargs['pk'])
+        try:
+            usuario.delete()
+            messages.warning(request, 'usuario excluído com sucesso!')
+        except:
+            messages.error(request, 'Erro ao excluir.')
+
+        return redirect('sistemahorista:tabela_usuarios')
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

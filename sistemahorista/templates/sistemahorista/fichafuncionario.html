@@ -1,5 +1,213 @@
-{%extends "global/base.html"%}
+{% extends "global/base.html" %}
 
-{%block content%}
 
-{%endblock content%}
+{% block content %}
+    <div class="detalhes-membro">
+        <h2>Detalhes do funcionario</h2>
+
+        <div class="linha-detalhe">
+            <span class="campo-label">Funcionario:</span>
+            <span class="campo-valor">{{ funcionario.nome_funcionario }}</span>
+        </div>
+        <div class="linha-detalhe">
+            <span class="campo-label">Salario-Hora:</span>
+            <span class="campo-valor">{{ funcionario.salario_hora }} </span>
+        </div>
+
+        <div class="linha-detalhe">
+            <span class="campo-label">dependentes:</span>
+            <span class="campo-valor">{{ funcionario.dependenteelegivel.count }}</span>
+        </div>
+
+
+        <div class="botoes-acao-duas-colunas">
+            <a class=" btn btn-editar" href="{% url 'sistemahorista:atualizar_funcionario' funcionario.pk %}">Editar</a>
+            <a class="btn btn-editar" href="#">Cadastrar Salario</a>
+            <a class="btn btn-editar" href="#">Cadastrar dependente</a>
+            <form method="post"
+                  class="form-excluir"
+                  action="{% url 'sistemahorista:deletar_funcionario' funcionario.pk %}"
+                  onsubmit="if(confirm('Deseja realmente excluir este produto?')) { this.querySelector('button').disabled = true; return true; } else { return false; }">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-excluir">Excluir</button>
+            </form>
+
+        </div>
+        <a class="btn btn-voltar" href="{% url 'sistemahorista:tabela_funcionarios' %}">← Voltar para lista</a>
+    </div>
+
+    <div>
+        <div class="list-container">
+            <h2>Salarios pagos ao funcionario</h2>
+
+            <!-- Ordenação -->
+            <form method="get" class="ordenacao-grid" id="form-ordenacao">
+
+                <div class="grupo-ordenacao">
+                    <strong>Valor</strong>
+                    <label><input type="radio" name="valor" value="asc"
+                                  {% if request.GET.valor == 'asc' %}checked{% endif %}> ↑</label>
+                    <label><input type="radio" name="valor" value="dec"
+                                  {% if request.GET.valor == 'dec' %}checked{% endif %}> ↓</label>
+                </div>
+
+                <div class="grupo-ordenacao ordenar-btn">
+                    <button type="submit" class="btn-ordenar">Ordenar</button>
+                </div>
+            </form>
+
+            <!-- Tabela de vendas -->
+            <table class="list-table">
+                <thead>
+                <tr>
+                    <th>Id-Salario</th>
+                    <th>Horas Trabalhadas</th>
+                    <th>Salario Bruto</th>
+                    <th>Salario Liquido</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for salario in salarios %}
+                    <tr>
+                        <td data-label="id">
+                           {{ salario.pk }}
+                        </td>
+
+                        <td data-label="horas trabalhadas">{{ salario.quantidade_horas_trabalhadas }}</td>
+                        <td data-label="Salario Bruto">{{ salario.salario_bruto }}</td>
+                        <td data-label="Salario Liquido">{{ salario.salario_liquido }}</td>
+
+
+                        <td data-label="Ações">
+                            <div class="action-buttons">
+                                <a href="#" class="edit">Editar</a>
+                                <form method="post"
+                                      class="form-excluir"
+                                      action="#"
+                                      onsubmit="if(confirm('Deseja realmente excluir este produto?')) { this.querySelector('button').disabled = true; return true; } else { return false; }">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-excluir">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">Nenhuma salario registrado.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination" style="font-size: 20px;">
+                {% if is_paginated %}
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; Primeira</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                    {% endif %}
+
+                    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <div>
+        <div class="list-container">
+            <h2>Lista de Dependentes funcionario</h2>
+
+
+            <table class="list-table">
+                <thead>
+                <tr>
+                    <th>Id-Dependentes</th>
+                    <th>Nome do dependente</th>
+                    <th>idade do dependente</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for dependente in dependentes  %}
+                    <tr>
+                        <td data-label="id">
+                           {{ dependente.pk }}
+                        </td>
+
+                        <td data-label="horas trabalhadas">{{ dependente.nome_dependente }}</td>
+                        <td data-label="Salario Bruto">{{ dependente.idade }}</td>
+
+
+                        <td data-label="Ações">
+                            <div class="action-buttons">
+                                <a href="#" class="edit">Editar</a>
+                                <form method="post"
+                                      class="form-excluir"
+                                      action="#"
+                                      onsubmit="if(confirm('Deseja realmente excluir este produto?')) { this.querySelector('button').disabled = true; return true; } else { return false; }">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-excluir">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">Nenhuma dependente registrado.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination" style="font-size: 20px;">
+                {% if is_paginated %}
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; Primeira</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                    {% endif %}
+
+                    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Script de controle de ordenação -->
+    <script>
+        document.getElementById('form-ordenacao').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const params = new URLSearchParams();
+
+            const nome = form.querySelector('input[name="nome"]:checked');
+            const retorno = form.querySelector('input[name="retorno"]:checked');
+            const valor = form.querySelector('input[name="valor"]:checked');
+
+            if (nome) {
+                params.append('nome', nome.value);
+            } else if (retorno) {
+                params.append('retorno', retorno.value);
+            } else if (valor) {
+                params.append('valor', valor.value);
+            }
+
+            const url = window.location.pathname + '?' + params.toString();
+            window.location.href = url;
+        });
+    </script>
+
+    </div>
+
+{% endblock %}

@@ -23,10 +23,10 @@
                     <td data-label="Usuário">{{ usuario.username }}</td>
                     <td data-label="Ações">
                         <div class="action-buttons">
-                            <a href="#" class="edit">Editar</a>
+                            <a href="{% url 'sistemahorista:atualizar_usuario' usuario.pk %}" class="edit">Editar</a>
                             <form method="post"
                                   class="form-excluir"
-                                  action="#"
+                                  action="{% url 'sistemahorista:deletar_usuario' usuario.pk %}"
                                   onsubmit="if(confirm('Deseja realmente excluir este Usuario?')) { this.querySelector('button').disabled = true; return true; } else { return false; }">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-excluir">Excluir</button>

@@ -15,3 +15,14 @@ from sistemahorista.models import *
 from datetime import date,timedelta
 from django.core.paginator import Paginator
 from django.db.models import F, FloatField, ExpressionWrapper,Prefetch,DateField,Func,Case,When,Value,IntegerField
+from funcionario_views import *
+from user_views import *
+from salario_views import *
+
+
+class ListarDependente(LoginRequiredMixin,ListView):
+    model = DependenteElegivel
+    template_name = 'sistemahorista/tabela_funcionario.html'
+    context_object_name = 'dependentes'
+    paginate_by = 10
+
