@@ -1,10 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "global/base.html" %}
+{% load crispy_forms_tags %}
 
-</body>
-</html>
+{% block content %}
+    <div class="form-container formulario-simples">
+        <form method="POST">
+
+            <h1>
+                Fibonacci
+            </h1>
+            {% csrf_token %}
+            <label for="numero_limite">Insira o número de termos da sequência:</label>
+            <input type="number" id="numero_limite" name="numero" required>
+
+
+            <div class="botoes-acao-duas-colunas">
+
+                <button type="submit">Gerar Fibonacci</button>
+            </div>
+        </form>
+
+        {% if resultado_sequencia %}
+            <h2>Resultado para {{ numero_digitado }} termos</h2>
+
+            {% if 'Erro:' in resultado_sequencia.0 %}
+                <p style="color: red;">{{ resultado_sequencia.0 }}</p>
+            {% else %}
+                {#  <h3>Sequência de Fibonacci:</h3>#}
+                {#  <p>{{ resultado_sequencia|join:", " }}</p>#}
+
+                <h3>Checagem do Número {{ numero_digitado }}:</h3>
+                {% if numero_na_sequencia %}
+                    <p>✅ O número **{{ numero_digitado }}** está presente na sequência.</p>
+                {% else %}
+                    <p>❌ O número **{{ numero_digitado }}** **não** está presente na sequência.</p>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+    </div>
+{% endblock %}

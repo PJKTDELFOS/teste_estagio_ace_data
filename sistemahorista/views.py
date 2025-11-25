@@ -71,11 +71,47 @@ class Busca(LoginRequiredMixin,View):
             'resultados': resultados,
         })
 
-
-
-
-
-
-
+@login_required()
 def paginainicial(request):
     return render(request, 'sistemahorista/tela_inicial_vazia.html')
+
+
+@login_required()
+def fibonacci(request):
+    sequencia = []
+    esta_na_sequencia = False
+    limite_sequencia_fibonacci=None
+
+    if request.method=='POST':
+        try:
+            limite_sequencia_fibonacci = int(request.POST.get('numero'))
+
+            if limite_sequencia_fibonacci <0:
+                raise ValueError('o numero deve ser maior que zero')
+
+            a,b=0,1
+            if  limite_sequencia_fibonacci >=1:
+                sequencia.append(a)
+            if limite_sequencia_fibonacci >=2:
+                sequencia.append(b)
+
+            for _ in range(2,limite_sequencia_fibonacci):
+                c=a+b
+                sequencia.append(c)
+                a=b
+                b=c
+        except ValueError as e:
+            sequencia=[f'erro{e}']
+            esta_na_sequencia = False
+
+    if limite_sequencia_fibonacci in sequencia:
+        esta_na_sequencia = True
+    contexto={
+        'resultado_sequencia':sequencia,
+        'numero_na_sequencia': esta_na_sequencia,
+         'numero_digitado':limite_sequencia_fibonacci
+    }
+    return render(request,'sistemahorista/fibonacci.html',contexto)
+
+
+
