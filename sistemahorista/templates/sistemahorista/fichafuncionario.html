@@ -22,8 +22,10 @@
 
         <div class="botoes-acao-duas-colunas">
             <a class=" btn btn-editar" href="{% url 'sistemahorista:atualizar_funcionario' funcionario.pk %}">Editar</a>
-            <a onclick="return abrir_popup_dependente(this.href)" class="btn btn-editar" href="{% url 'sistemahorista:cadastrar_salario' funcionario.pk %}">Cadastrar Salario</a>
-            <a  onclick="return abrir_popup_dependente(this.href)" class="btn btn-editar" href="{% url 'sistemahorista:cadastrar_dependente' funcionario.pk %}">Cadastrar dependente</a>
+            <a onclick="return abrir_popup_dependente(this.href)" class="btn btn-editar"
+               href="{% url 'sistemahorista:cadastrar_salario' funcionario.pk %}">Cadastrar Salario</a>
+            <a onclick="return abrir_popup_dependente(this.href)" class="btn btn-editar"
+               href="{% url 'sistemahorista:cadastrar_dependente' funcionario.pk %}">Cadastrar dependente</a>
             <form method="post"
                   class="form-excluir"
                   action="{% url 'sistemahorista:deletar_funcionario' funcionario.pk %}"
@@ -44,18 +46,29 @@
             <form method="get" class="ordenacao-grid" id="form-ordenacao">
 
                 <div class="grupo-ordenacao">
-                    <strong>Valor</strong>
-                    <label><input type="radio" name="valor" value="asc"
-                                  {% if request.GET.valor == 'asc' %}checked{% endif %}> ↑</label>
-                    <label><input type="radio" name="valor" value="dec"
-                                  {% if request.GET.valor == 'dec' %}checked{% endif %}> ↓</label>
+                    <strong>Líquido</strong>
+                    <label><input type="radio" name="campo" value="liquido"
+                                  {% if request.GET.campo == 'liquido' %}checked{% endif %}> Liq.</label>
+                </div>
+
+                <div class="grupo-ordenacao">
+                    <strong>Bruto</strong>
+                    <label><input type="radio" name="campo" value="bruto"
+                                  {% if request.GET.campo == 'bruto' %}checked{% endif %}> Bruto</label>
+                </div>
+
+                <div class="grupo-ordenacao">
+                    <strong>Ordem</strong>
+                    <label><input type="radio" name="ordem" value="asc"
+                                  {% if request.GET.ordem == 'asc' %}checked{% endif %}> ↑ Menor</label>
+                    <label><input type="radio" name="ordem" value="dec"
+                                  {% if request.GET.ordem == 'dec' %}checked{% endif %}> ↓ Maior</label>
                 </div>
 
                 <div class="grupo-ordenacao ordenar-btn">
                     <button type="submit" class="btn-ordenar">Ordenar</button>
                 </div>
             </form>
-
             <!-- Tabela de vendas -->
             <table class="list-table">
                 <thead>
@@ -71,7 +84,7 @@
                 {% for salario in salarios %}
                     <tr>
                         <td data-label="id">
-                           {{ salario.pk }}
+                            {{ salario.pk }}
                         </td>
 
                         <td data-label="horas trabalhadas">{{ salario.quantidade_horas_trabalhadas }}</td>
@@ -81,7 +94,9 @@
 
                         <td data-label="Ações">
                             <div class="action-buttons">
-                                <a onclick="return abrir_popup_dependente(this.href)" href="{% url 'sistemahorista:atualizar_salario'  salario.pk %}" class="edit">Editar</a>
+                                <a onclick="return abrir_popup_dependente(this.href)"
+                                   href="{% url 'sistemahorista:atualizar_salario'  salario.pk %}"
+                                   class="edit">Editar</a>
                                 <form method="post"
                                       class="form-excluir"
                                       action="{% url 'sistemahorista:deletar_salario'  funcionario.pk salario.pk %}"
@@ -133,10 +148,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for dependente in dependentes  %}
+                {% for dependente in dependentes %}
                     <tr>
                         <td data-label="id">
-                           {{ dependente.pk }}
+                            {{ dependente.pk }}
                         </td>
 
                         <td data-label="Nome Do dependente">{{ dependente.nome_dependente }}</td>
@@ -145,7 +160,8 @@
 
                         <td data-label="Ações">
                             <div class="action-buttons">
-                                <a onclick="return abrir_popup_dependente(this.href)" href="{% url 'sistemahorista:atualizar_dependente' dependente.pk %}" class="edit">Editar</a>
+                                <a onclick="return abrir_popup_dependente(this.href)"
+                                   href="{% url 'sistemahorista:atualizar_dependente' dependente.pk %}" class="edit">Editar</a>
                                 <form method="post"
                                       class="form-excluir"
                                       action="{% url 'sistemahorista:deletar_dependente'  funcionario.pk dependente.pk %}"
@@ -186,52 +202,57 @@
     <!-- Script de controle de ordenação -->
     <script>
         document.getElementById('form-ordenacao').addEventListener('submit', function (event) {
-            event.preventDefault();
+        event.preventDefault();
 
-            const form = event.target;
-            const params = new URLSearchParams();
+        const form = event.target;
+        const params = new URLSearchParams(window.location.search); // Mantém paginação/filtros existentes
 
-            const nome = form.querySelector('input[name="nome"]:checked');
-            const retorno = form.querySelector('input[name="retorno"]:checked');
-            const valor = form.querySelector('input[name="valor"]:checked');
+        // 1. Capturar o CAMPO e a ORDEM selecionados
+        const campo = form.querySelector('input[name="campo"]:checked');
+        const ordem = form.querySelector('input[name="ordem"]:checked');
 
-            if (nome) {
-                params.append('nome', nome.value);
-            } else if (retorno) {
-                params.append('retorno', retorno.value);
-            } else if (valor) {
-                params.append('valor', valor.value);
-            }
+        // 2. Limpar os parâmetros de ordenação antigos, se existirem
+        params.delete('campo');
+        params.delete('ordem');
 
-            const url = window.location.pathname + '?' + params.toString();
-            window.location.href = url;
-        });
+        // 3. Adicionar os novos parâmetros
+        if (campo) {
+            params.append('campo', campo.value);
+        }
+        if (ordem) {
+            params.append('ordem', ordem.value);
+        }
 
 
-        function abrir_popup_dependente(url){
-            const largura =600;
+        const url = window.location.pathname + '?' + params.toString();
+        window.location.href = url;
+    });
+
+
+        function abrir_popup_dependente(url) {
+            const largura = 600;
             const altura = 400;
-            const esquerda = (screen.width/2)-(largura/2);
-            const topo = (screen.height/2)-(altura/2);
+            const esquerda = (screen.width / 2) - (largura / 2);
+            const topo = (screen.height / 2) - (altura / 2);
 
-            const popup=window.open(
+            const popup = window.open(
                 url,
                 'PopUpDependente',
                 `width=${largura},height=${altura},top=${topo},left=${esquerda}`
             );
 
-            const timer=setInterval(
-                function (){
-                    if(popup.closed){
+            const timer = setInterval(
+                function () {
+                    if (popup.closed) {
                         clearInterval(timer);
                         window.location.reload();
                     }
 
-                },500
+                }, 500
             );
             return false;
 
-            function fecharPopUpdependente(){
+            function fecharPopUpdependente() {
                 window.opener.location.reload(true);
                 window.close();
             }

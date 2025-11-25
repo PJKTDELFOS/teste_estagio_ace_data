@@ -26,12 +26,7 @@ class ListarFuncionarios(LoginRequiredMixin,ListView):
     context_object_name = 'funcionarios'
     paginate_by = 10
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_query= self.request.GET.get('q','')
-        if search_query:
-            queryset = queryset.filter(Q(numero_processo__icontains=search_query))
-        return queryset
+
 
 
 
@@ -109,9 +104,44 @@ class Funcionario_detalhe(LoginRequiredMixin,DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['salarios'] = Salario.objects.filter(funcionario=self.object)
-        context['dependentes'] = DependenteElegivel.objects.filter(responsavel=self.object)
 
+        funcionario_atual = self.object
+        context['dependentes'] = funcionario_atual.dependenteelegivel.all()
+
+
+
+
+        campo_ordenar = self.request.GET.get('campo', 'liquido')  # Padrão: liquido
+        direcao_ordenar = self.request.GET.get('ordem', 'asc')  # Padrão: asc (menor para maior)
+
+
+        prefixo = '-' if direcao_ordenar == 'dec' else ''
+
+
+        if campo_ordenar == 'liquido':
+            ordenar_por = f'{prefixo}salario_liquido'
+
+            ordenar_secundario = f'{prefixo}salario_bruto'
+        elif campo_ordenar == 'bruto':
+            ordenar_por = f'{prefixo}salario_bruto'
+
+            ordenar_secundario = f'{prefixo}salario_liquido'
+        else:
+
+            ordenar_por = 'salario_liquido'
+            ordenar_secundario = 'salario_bruto'
+
+
+        salarios_qs = funcionario_atual.salario.all().order_by(
+            ordenar_por,
+            ordenar_secundario
+        )
+
+
+        context['salarios'] = salarios_qs
+
+
+        context['filtros_ativos'] = {'campo': campo_ordenar, 'ordem': direcao_ordenar}
 
         return context
 
