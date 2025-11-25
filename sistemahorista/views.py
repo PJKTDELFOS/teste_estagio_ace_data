@@ -16,6 +16,12 @@ from django.core.paginator import Paginator
 from django.db.models import F, FloatField, ExpressionWrapper,Prefetch,DateField,Func,Case,When,Value,IntegerField
 from sistemahorista.services.main_services import MainServices
 from sistemahorista.services.search_map import mapa_modelos
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
+
+
+
 
 # Create your views here.
 
@@ -89,7 +95,7 @@ def fibonacci(request):
             if limite_sequencia_fibonacci <0:
                 raise ValueError('o numero deve ser maior que zero')
 
-            a,b=0,1
+            a,b=1,1
             if  limite_sequencia_fibonacci >=1:
                 sequencia.append(a)
             if limite_sequencia_fibonacci >=2:
@@ -114,4 +120,65 @@ def fibonacci(request):
     return render(request,'sistemahorista/fibonacci.html',contexto)
 
 
+@login_required()
+def receber_array(request):
+    contexto = {
+        'etapa': 1,
+        'tamanho_alvo': None,
+        'erro_mensagem': None
+    }
+    tamanho_alvo = request.session.get('tamanho_alvo')
+    if tamanho_alvo is not None:
+        contexto['tamanho_alvo'] = tamanho_alvo
+        contexto['etapa'] = 2
+    if request.method == 'POST':
+        if 'tamanho_sequencia' in request.POST:
+            try:
+                N = int(request.POST.get('tamanho_sequencia'))
+                if N <= 0:
+                    raise ValidationError('O tamanho da sequencia deve ser maior que 0(zero)')
+                request.session['tamanho_alvo'] = N
+                contexto['tamanho_alvo'] = N
+                contexto['etapa'] = 2
 
+            except (ValidationError, ValueError) as e:
+                contexto['erro_mensagem'] = str(e)
+                contexto['etapa'] = 1
+            return render(request, 'sistemahorista/exercicio2_sequencia.html', contexto)
+
+        elif 'valores_da_sequencia' in request.POST and tamanho_alvo is not None:
+            entrada_string = request.POST.get('valores_da_sequencia', '')
+            try:
+                valores_completos = [
+                    int(v.strip()) for v in entrada_string.split(',') if v.strip()
+                ]
+                if not valores_completos:
+                    raise ValidationError('Nenhum valor inserido')
+
+                sequencia_a_processar = valores_completos[:tamanho_alvo]
+
+                if len(sequencia_a_processar) < tamanho_alvo:
+                    contexto['aviso'] = (f'Apenas {len(sequencia_a_processar)} números foram '
+                                         f'processados, em vez dos {tamanho_alvo} esperados')
+                if not sequencia_a_processar:
+                    raise ValidationError('A sequência final está vazia.')
+
+                minimo_valor_sequencia = min(sequencia_a_processar)
+                maximo_valor_sequencia = max(sequencia_a_processar)
+                contexto['etapa'] = 3
+                contexto['resultado_sequencia'] = sequencia_a_processar
+                contexto['menor_valor'] = minimo_valor_sequencia
+                contexto['maior_valor'] = maximo_valor_sequencia
+                contexto['tamanho_final'] = len(sequencia_a_processar)
+                if 'tamanho_alvo' in request.session:
+                    del request.session['tamanho_alvo']
+            except (ValidationError, ValueError) as e:
+                contexto['erro_mensagem'] = str(e)
+                contexto['etapa'] = 2  # Volta à etapa 2 para correção
+
+            return render(request, 'sistemahorista/exercicio2_sequencia.html', contexto)
+
+    if 'tamanho_alvo' in request.session:
+        del request.session['tamanho_alvo']
+
+    return render(request, 'sistemahorista/exercicio2_sequencia.html', contexto)

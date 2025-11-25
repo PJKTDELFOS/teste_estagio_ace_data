@@ -24,7 +24,7 @@ from sistemahorista.sistem_views.funcionario_views import (
     ListarFuncionarios, CadastrarFuncionario, AtualizarFuncionario, DeletarFuncionario, Funcionario_detalhe)
 from sistemahorista.sistem_views.salario_views import CadastrarSalario, AtualizarSalario, DeletarSalario
 from sistemahorista.sistem_views.user_views import Cadastro_usuario, ListarUsuario, AtualizarUsuario, DeletarUsuario
-from sistemahorista.views import Login, Logout, paginainicial, Busca,fibonacci
+from sistemahorista.views import Login, Logout, paginainicial, Busca,fibonacci,receber_array
 
 app_name = 'sistemahorista'
 urlpatterns = [
@@ -35,6 +35,7 @@ urlpatterns = [
 
     path('busca', Busca.as_view(), name='busca_dinamica'),
     path('fibonacci/', fibonacci, name='fibonacci'),
+path('receber_array/', receber_array, name='receber_array'),
 
 # <______________________________Urls de usuario_____________________________________________>#
 

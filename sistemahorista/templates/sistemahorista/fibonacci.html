@@ -25,14 +25,14 @@
             {% if 'Erro:' in resultado_sequencia.0 %}
                 <p style="color: red;">{{ resultado_sequencia.0 }}</p>
             {% else %}
-                {#  <h3>Sequência de Fibonacci:</h3>#}
-                {#  <p>{{ resultado_sequencia|join:", " }}</p>#}
+                 <h3>Sequência de Fibonacci:</h3>
+                 <p>{{ resultado_sequencia|join:", " }}</p>
 
                 <h3>Checagem do Número {{ numero_digitado }}:</h3>
                 {% if numero_na_sequencia %}
-                    <p>✅ O número **{{ numero_digitado }}** está presente na sequência.</p>
+                    <p> O número {{ numero_digitado }} está presente na sequência.</p>
                 {% else %}
-                    <p>❌ O número **{{ numero_digitado }}** **não** está presente na sequência.</p>
+                    <p> O número {{ numero_digitado }} não está presente na sequência.</p>
                 {% endif %}
             {% endif %}
         {% endif %}
