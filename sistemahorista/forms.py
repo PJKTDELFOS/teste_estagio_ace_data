@@ -213,7 +213,7 @@ class SalarioForm(forms.ModelForm):
 
 
         if funcionario_obj:
-            self.fields['funcionario'].initial=funcionario_obj.nome_funcionario
+            self.fields['funcionario_nome'].initial=funcionario_obj.nome_funcionario
             self.fields['funcionario'].initial=funcionario_obj.pk
 
 

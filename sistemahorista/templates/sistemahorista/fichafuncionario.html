@@ -22,7 +22,7 @@
 
         <div class="botoes-acao-duas-colunas">
             <a class=" btn btn-editar" href="{% url 'sistemahorista:atualizar_funcionario' funcionario.pk %}">Editar</a>
-            <a class="btn btn-editar" href="#">Cadastrar Salario</a>
+            <a onclick="return abrir_popup_dependente(this.href)" class="btn btn-editar" href="{% url 'sistemahorista:cadastrar_salario' funcionario.pk %}">Cadastrar Salario</a>
             <a  onclick="return abrir_popup_dependente(this.href)" class="btn btn-editar" href="{% url 'sistemahorista:cadastrar_dependente' funcionario.pk %}">Cadastrar dependente</a>
             <form method="post"
                   class="form-excluir"
@@ -81,10 +81,10 @@
 
                         <td data-label="Ações">
                             <div class="action-buttons">
-                                <a href="#" class="edit">Editar</a>
+                                <a onclick="return abrir_popup_dependente(this.href)" href="{% url 'sistemahorista:atualizar_salario'  salario.pk %}" class="edit">Editar</a>
                                 <form method="post"
                                       class="form-excluir"
-                                      action="#"
+                                      action="{% url 'sistemahorista:deletar_salario'  funcionario.pk salario.pk %}"
                                       onsubmit="if(confirm('Deseja realmente excluir este produto?')) { this.querySelector('button').disabled = true; return true; } else { return false; }">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-excluir">Excluir</button>
@@ -139,8 +139,8 @@
                            {{ dependente.pk }}
                         </td>
 
-                        <td data-label="horas trabalhadas">{{ dependente.nome_dependente }}</td>
-                        <td data-label="Salario Bruto">{{ dependente.idade }}</td>
+                        <td data-label="Nome Do dependente">{{ dependente.nome_dependente }}</td>
+                        <td data-label="idade do dependente">{{ dependente.idade }}</td>
 
 
                         <td data-label="Ações">
