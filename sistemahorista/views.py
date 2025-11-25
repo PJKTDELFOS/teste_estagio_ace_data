@@ -174,7 +174,7 @@ def receber_array(request):
                     del request.session['tamanho_alvo']
             except (ValidationError, ValueError) as e:
                 contexto['erro_mensagem'] = str(e)
-                contexto['etapa'] = 2  # Volta à etapa 2 para correção
+                contexto['etapa'] = 2
 
             return render(request, 'sistemahorista/exercicio2_sequencia.html', contexto)
 

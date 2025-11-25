@@ -151,10 +151,10 @@ class DependenteElegivelForm(forms.ModelForm):
         funcionario_obj = None
 
         if self.responsavel_instance:
-            # Caso de Criação: Objeto Funcionario é passado via kwargs
+
             funcionario_obj = self.responsavel_instance
         elif self.instance and self.instance.pk:
-            # ✅ CORREÇÃO: No modo Edição, a FK 'responsavel' já contém o objeto Funcionario
+
             funcionario_obj = self.instance.responsavel
 
 
@@ -162,9 +162,19 @@ class DependenteElegivelForm(forms.ModelForm):
             self.fields['idade'].required = False
 
         if funcionario_obj:
-            # Isso agora funciona porque funcionario_obj é uma instância de Funcionario
+
             self.fields['responsavel_pelo_dependente'].initial = funcionario_obj.nome_funcionario
             self.fields['responsavel'].initial = funcionario_obj.pk
+
+    def clean(self):
+        cleaned_data = super().clean()
+        idade_dependente_data = cleaned_data.get('idade')
+
+
+        if idade_dependente_data is not None and idade_dependente_data >14:
+            self.add_error('idade','Somente dependentes com menos de 14 anos podem ser cadastrados')
+        return cleaned_data
+
 
 
 

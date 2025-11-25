@@ -35,7 +35,7 @@ urlpatterns = [
 
     path('busca', Busca.as_view(), name='busca_dinamica'),
     path('fibonacci/', fibonacci, name='fibonacci'),
-path('receber_array/', receber_array, name='receber_array'),
+    path('receber_array/', receber_array, name='receber_array '),
 
 # <______________________________Urls de usuario_____________________________________________>#
 
