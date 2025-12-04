@@ -19,6 +19,7 @@ from sistemahorista.services.search_map import mapa_modelos
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from sistemahorista.teste2_esboco import fibonacci_teste2
 
 
 
@@ -84,32 +85,16 @@ def paginainicial(request):
 
 @login_required()
 def fibonacci(request):
-    sequencia = []
-    esta_na_sequencia = False
+    esta_na_sequencia=False
     limite_sequencia_fibonacci=None
-
+    sequencia = []
     if request.method=='POST':
-        try:
-            limite_sequencia_fibonacci = int(request.POST.get('numero'))
-
-            if limite_sequencia_fibonacci <0:
-                raise ValueError('o numero deve ser maior que zero')
-
-            a,b=1,1
-            if  limite_sequencia_fibonacci >=1:
-                sequencia.append(a)
-            if limite_sequencia_fibonacci >=2:
-                sequencia.append(b)
-
-            for _ in range(2,limite_sequencia_fibonacci):
-                c=a+b
-                sequencia.append(c)
-                a=b
-                b=c
-        except ValueError as e:
-            sequencia=[f'erro{e}']
-            esta_na_sequencia = False
-
+       try:
+           limite_sequencia_fibonacci = int(request.POST.get('numero'))
+           sequencia=fibonacci_teste2(limite_sequencia_fibonacci)
+       except ValueError as e:
+           sequencia=[f'erro{e}']
+           esta_na_sequencia = False
     if limite_sequencia_fibonacci in sequencia:
         esta_na_sequencia = True
     contexto={
@@ -164,9 +149,12 @@ def receber_array(request):
                     raise ValidationError('A sequência final está vazia.')
 
                 minimo_valor_sequencia = min(sequencia_a_processar)
+                segundo_maior=sorted(sequencia_a_processar)
+                segundo_maior=segundo_maior[-2]
                 maximo_valor_sequencia = max(sequencia_a_processar)
                 contexto['etapa'] = 3
                 contexto['resultado_sequencia'] = sequencia_a_processar
+                contexto['segundo_maior_valor'] = segundo_maior
                 contexto['menor_valor'] = minimo_valor_sequencia
                 contexto['maior_valor'] = maximo_valor_sequencia
                 contexto['tamanho_final'] = len(sequencia_a_processar)

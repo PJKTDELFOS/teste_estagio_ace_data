@@ -641,7 +641,7 @@ div[id^="div_id_"][id$="-DELETE"] {
 
 .pagination .current {
   font-weight: bold;
-  color: #007bff; /* azul, por exemplo */
+  color: white; /* azul, por exemplo */
   font-size: 1.1rem; /* opcional */
 }
 

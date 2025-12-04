@@ -64,7 +64,7 @@ urlpatterns = [
     path('tabela_usuarios/<int:func_pk>/deletar_dependente/<int:pk>',
          DeletarDependente.as_view(), name='deletar_dependente'),
 
-# <______________________________Urls de Dependente_____________________________________________>#
+# <______________________________Urls de Salario_____________________________________________>#
 
     path('tabela_usuarios/<int:pk>/cadastro_salario/',
          CadastrarSalario.as_view(), name='cadastrar_salario'),
